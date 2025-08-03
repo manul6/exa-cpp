@@ -36,12 +36,25 @@ elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
     add_link_options(-fsanitize=address,undefined)
 endif()
 
-add_executable(poc src/poc.cpp)
-
-target_link_libraries(poc 
+# add library target for client
+add_library(exa_client src/client.cpp)
+target_include_directories(exa_client PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(exa_client
     Boost::system
     OpenSSL::SSL
     OpenSSL::Crypto
 )
 
-target_include_directories(poc PRIVATE ${Boost_INCLUDE_DIRS})
+add_executable(poc src/poc.cpp)
+
+target_link_libraries(poc 
+    exa_client
+    Boost::system
+    OpenSSL::SSL
+    OpenSSL::Crypto
+)
+
+target_include_directories(poc PRIVATE 
+    ${Boost_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
